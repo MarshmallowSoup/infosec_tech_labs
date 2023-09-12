@@ -1,5 +1,6 @@
 import string
 
+#Генерація ключа
 def generate_key(keyword):
     alphabet = list("абвгґдеєжзиіїйклмнопрстуфхцчшщьюя ,:.;-/")
     keyword = list(keyword.lower())
@@ -14,6 +15,7 @@ def generate_key(keyword):
 
     return ''.join(keyword)
 
+#Функція шифрування
 def encrypt(text, key):
     encrypted_text = ""
     for char in text:
@@ -25,6 +27,7 @@ def encrypt(text, key):
 
     return encrypted_text.strip()
 
+#Функція розшифрування
 def decrypt(encrypted_text, key):
     decrypted_text = ""
     encrypted_characters = encrypted_text.split()
@@ -43,9 +46,12 @@ def main():
 
     key = generate_key(keyword)
     encrypted_text = encrypt(plaintext, key)
-    decrypted_text = decrypt(encrypted_text, key)
 
     print("Зашифрований текст: \n", encrypted_text)
+
+    encrypted_text = input("Введіть ваш код для розшифрування: \n").lower().strip()
+
+    decrypted_text = decrypt(encrypted_text, key)
     print("Розшифрований текст: \n", decrypted_text)
 
 if __name__ == "__main__":
