@@ -24,7 +24,9 @@ def numerical_to_string(numbers):
 def encrypt(message, gamma_key):
     alphabet_table = initialize_alphabet_table()
     message_numbers = convert_to_numerical(message)
+    print(str(message_numbers))
     gamma_key_numbers = convert_to_numerical(gamma_key)
+    print(str(gamma_key_numbers))
 
     encrypted_numbers = []
     for i, message_num in enumerate(message_numbers):
@@ -33,6 +35,7 @@ def encrypt(message, gamma_key):
         encrypted_number = sum_result % len(alphabet_table)
 
         encrypted_numbers.append(encrypted_number)
+    print(str(encrypted_numbers))
 
     encrypted_string = numerical_to_string(encrypted_numbers)
     return encrypted_string
@@ -75,13 +78,11 @@ def task2(gamma_key, encrypted_message):
 def main():
     print("================================================")
     print("Завдання 1")
-    task1("БОРИМИР", "ЧОРАПНЕМОРЕ_201")
     print("================================================")
     print()
     print("================================================")
     print("Завдання 2")
     task2("ДИВОЗІР", "ДЗЧЦ_РУ6ЇЗЇЕУНРЮ")
-    # task2("БОРИМИР", "Щ37І2ШЧО37НЕГІ3")
     print("================================================")
 
 if __name__ == "__main__":
