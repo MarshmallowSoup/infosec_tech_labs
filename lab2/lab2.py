@@ -13,7 +13,7 @@ ALPHABET_TABLE = {
 def initialize_alphabet_table():
     return ALPHABET_TABLE
 
-def convert_gamma_to_numerical(gamma_key):
+def convert_to_numerical(gamma_key):
     alphabet_table = initialize_alphabet_table()
     return [alphabet_table.get(char, 0) for char in gamma_key]
 
@@ -23,8 +23,8 @@ def numerical_to_string(numbers):
 
 def encrypt(message, gamma_key):
     alphabet_table = initialize_alphabet_table()
-    message_numbers = [alphabet_table.get(char, 0) for char in message]
-    gamma_key_numbers = convert_gamma_to_numerical(gamma_key)
+    message_numbers = convert_to_numerical(message)
+    gamma_key_numbers = convert_to_numerical(gamma_key)
 
     encrypted_numbers = []
     for i, message_num in enumerate(message_numbers):
@@ -38,22 +38,25 @@ def encrypt(message, gamma_key):
     return encrypted_string
 
 def decrypt(encrypted_message, gamma_key):
-    alphabet_table = initialize_alphabet_table()
-    encrypted_numbers = convert_gamma_to_numerical(encrypted_message)
-    gamma_key_numbers = convert_gamma_to_numerical(gamma_key)
-
+    # Step 1: Convert encrypted message to a list of numbers
+    encrypted_numbers = convert_to_numerical(encrypted_message)
+    # Step 2: Convert gamma key to a list of numbers
+    gamma_key_numbers = convert_to_numerical(gamma_key)
+    # Step 3: Subtract values from gamma key list from encrypted message list
     decrypted_numbers = []
-    for i, encrypted_num in enumerate(encrypted_numbers):
-        gamma_index = i % len(gamma_key_numbers)
-        diff_result = encrypted_num - gamma_key_numbers[gamma_index]
-
-        if diff_result < 0:
-            diff_result += len(alphabet_table)
-
+    for i in range(len(encrypted_numbers)):
+        gamma_index = i % len(gamma_key_numbers)  # Handle gamma key list shorter than encrypted message list
+        diff_result = encrypted_numbers[i] - gamma_key_numbers[gamma_index]
+        
+        # If the difference is negative, add 44 to wrap around
+        if diff_result <= 0:
+            diff_result += 44
+        
         decrypted_numbers.append(diff_result)
-
-    decrypted_string = numerical_to_string(decrypted_numbers)
-    return decrypted_string
+    # Step 4: Convert the decrypted numbers to a string using the dictionary
+    decrypted_message =  numerical_to_string(decrypted_numbers)
+    # Step 5: Return the decrypted message
+    return decrypted_message
 
 def task1(gamma_key, message):
     encrypted_message = encrypt(message, gamma_key)
@@ -78,6 +81,7 @@ def main():
     print("================================================")
     print("Завдання 2")
     task2("ДИВОЗІР", "ДЗЧЦ_РУ6ЇЗЇЕУНРЮ")
+    # task2("БОРИМИР", "Щ37І2ШЧО37НЕГІ3")
     print("================================================")
 
 if __name__ == "__main__":
