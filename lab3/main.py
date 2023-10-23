@@ -31,7 +31,7 @@ def generate_rsa_keys(p, q):
     return phi_n, n
 
 def encrypt(text, n, phi):
-    print(f'Original message:{text}')
+    print(f'Original message: {text}')
     msg = convert_to_numerical(text)
     e = 2
     while(e < phi):
