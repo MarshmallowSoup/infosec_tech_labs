@@ -1,49 +1,58 @@
-def feistel_network(text, rounds, shift_amount):
-    def feistel_round(data, key):
-        left, right = data[:len(data)//2], data[len(data)//2:]
-        new_right = [0] * len(right)
-        for i in range(len(right)):
-            new_right[i] = (right[i] + key[i % len(key)]) % 256
-        new_right = [(new_right[i] << shift_amount) % 256 for i in range(len(new_right))]
-        new_left = [right[i] ^ left[i] for i in range(len(left))]
-        return new_right + new_left
+def feistel_function(left, right, round_key):
+    new_left = right
+    new_right = left ^ (right + round_key)
+    return new_left, new_right
 
-    data = [ord(char) for char in text]
+def pad_text(text, block_length):
+    padding_length = block_length - (len(text) % block_length)
+    if padding_length != block_length:
+        padding = chr(padding_length)
+        return text + padding * padding_length
+    return text
 
-    for _ in range(rounds):
-        data = feistel_round(data, data[:len(data)//2])
+def feistel_encrypt(plaintext, num_rounds, key):
+    block_length = 2
+    ciphertext = ''
 
-    encrypted_text = ''.join(chr(byte) for byte in data)
-    return encrypted_text
+    plaintext = pad_text(plaintext, block_length)
 
-def feistel_network_decrypt(encrypted_text, rounds, shift_amount):
-    def feistel_round_decrypt(data, key):
-        left, right = data[:len(data)//2], data[len(data)//2:]
-        new_left = [0] * len(left)
-        for i in range(len(left)):
-            new_left[i] = (left[i] ^ key[i % len(key)]) % 256
-        new_right = [(new_left[i] >> shift_amount) % 256 for i in range(len(new_left))]
-        new_left = [right[i] ^ left[i] for i in range(len(right))]
-        return new_right + new_left
+    for i in range(0, len(plaintext), block_length):
+        left, right = ord(plaintext[i]), ord(plaintext[i + 1])
 
-    data = [ord(char) for char in encrypted_text]
+        for round in range(num_rounds):
+            left, right = feistel_function(left, right, key)
 
-    for _ in range(rounds):
-        data = feistel_round_decrypt(data, data[:len(data)//2])
+        ciphertext += chr(left) + chr(right)
 
-    decrypted_text = ''.join(chr(byte) for byte in data)
-    return decrypted_text
+    return ciphertext
 
-# Input text to encrypt
-source_text = "Hello, Feistel Network!"
-rounds = 28
-shift_amount = 1
-# Encryption
+def feistel_decrypt(ciphertext, num_rounds, key):
+    block_length = 2
+    plaintext = ''
+
+    for i in range(0, len(ciphertext), block_length):
+        left, right = ord(ciphertext[i]), ord(ciphertext[i + 1])
+
+        for round in range(num_rounds):
+            round_key = key
+            right, left = feistel_function(right, left, round_key)
+
+        block = chr(left) + chr(right)
+        plaintext += block
+
+    return plaintext
+
+source_text = "Hello, World!"
+num_rounds = 28
+key = 1
+
+# Encrypt the source text
+encrypted_text = feistel_encrypt(source_text, num_rounds, key)
+
+# Decrypt the encrypted text
+decrypted_text = feistel_decrypt(encrypted_text, num_rounds, key)
+
+# Display the results
 print("Source Text:", source_text)
-
-encrypted_text = feistel_network(source_text, rounds, shift_amount)
 print("Encrypted Text:", encrypted_text)
-
-# Decryption
-decrypted_text = feistel_network_decrypt(encrypted_text, rounds, shift_amount)
 print("Decrypted Text:", decrypted_text)
